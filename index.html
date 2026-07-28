@@ -669,9 +669,9 @@ function rIntro(q, sc){
     <p>SK일렉링크는 택시 기사님들이 더 편리하고 합리적으로 전기차를 운행하실 수 있도록 기사님 맞춤 서비스와 멤버십을 준비하고 있습니다. 25개 문항, 약 8분이면 충분합니다. 정답이 없는 질문들이니 평소 생각하시는 대로 편하게 답해주세요.</p>
     <div class="event">
       <div class="ev"><span class="ico">&#128197;</span><span class="txt"><span class="lab">응답 기한</span> · 26년 8월 9일(일) 23시 59분까지</span></div>
-      <div class="ev"><span class="ico">&#127873;</span><span class="txt"><span class="lab">응답 혜택</span> · 응답자 전원 <b>SK일렉링크 5,000 무상 포인트</b> (충전 시 바로 사용 가능)</span></div>
-      <div class="ev"><span class="ico">&#128241;</span><span class="txt"><span class="lab">지급 안내</span> · 26년 8월 14일 이내, 아래에 남겨주신 휴대전화번호로 문자 발송</span></div>
-      <div class="ev"><span class="ico">&#128161;</span><span class="txt">문자 속 프로모션 코드를 <b>SK일렉링크 App</b>에 등록하시면 포인트가 지급됩니다. (사전에 SK일렉링크 회원가입 필수!)</span></div>
+      <div class="ev"><span class="ico">&#127873;</span><span class="txt"><span class="lab">응답 혜택</span> · 응답자 전원 <br><b>SK일렉링크 5,000 무상 포인트</b> <br>(충전 시 바로 사용 가능)</span></div>
+      <div class="ev"><span class="ico">&#128241;</span><span class="txt"><span class="lab">지급 안내</span> · 26년 8월 14일 이내, <br>아래에 남겨주신 휴대전화번호로 문자 발송</span></div>
+      <div class="ev"><span class="ico">&#128161;</span><span class="txt">문자 속 프로모션 코드를 <b>SK일렉링크 App</b>에 등록하시면 포인트가 지급됩니다. <br>(사전에 SK일렉링크 회원가입 필수!)</span></div>
     </div>`;
   sc.append(h);
 
@@ -679,10 +679,10 @@ function rIntro(q, sc){
   const c = el('div','consent');
   c.innerHTML = `
     <div class="ct-head">개인정보 수집 및 이용 동의<span class="req">필수</span></div>
-    <div class="ct-sub">동의를 거부하실 수 있으나, 거부 시 설문 참여와 포인트 지급이 어렵습니다.</div>
+    <div class="ct-sub">동의를 거부하실 수 있으나, <br>거부 시 설문 참여와 포인트 지급이 어렵습니다.</div>
     <div class="ptable">
       <div class="prow"><span class="pk">수집 항목</span><span class="pv">휴대전화번호, 설문 응답 내용</span></div>
-      <div class="prow"><span class="pk">수집 · 이용 목적</span><span class="pv">설문 진행, 포인트 지급 안내, 충전 멤버십 상품 개발</span></div>
+      <div class="prow"><span class="pk">수집 · 이용 목적</span><span class="pv">설문 진행, 포인트 지급 안내, <br>충전 멤버십 상품 개발</span></div>
       <div class="prow"><span class="pk">보유 · 이용 기간</span><span class="pv warn">포인트 지급 완료 후 1개월 이내 파기</span></div>
     </div>`;
   const mk = (key, txt, req) => {
