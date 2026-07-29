@@ -583,6 +583,7 @@ const A = {};            // 답변
 const OTHER = {};        // 기타 입력값
 let idx = 0, back = false;
 const started = new Date();
+let startedSurvey = null;   // '동의하고 설문 시작하기' 클릭 시각 — 진정성 판단용 참여시간 측정
 
 const stage = document.getElementById('stage');
 const actions = document.getElementById('actions');
@@ -717,7 +718,8 @@ function rIntro(q, sc){
   pb.append(nb);
   sc.append(pb);
 
-  bar({ next:'동의하고 설문 시작하기', hideBack:true, valid:introOk() });
+  bar({ next:'동의하고 설문 시작하기', hideBack:true, valid:introOk(),
+        onNext: () => { if (!startedSurvey) startedSurvey = Date.now(); go(1); } });
 }
 function introOk(){
   return !!A.agreePrivacy && (A.phone||'').replace(/[^0-9]/g,'').length >= 10;
@@ -1091,6 +1093,10 @@ function payload(){
       out[q.id] = v == null ? '' : v;
     }
   });
+  // 참여시간(설문 시작 클릭 → 제출) — 새 키라서 시트 헤더 맨 뒤에 열로 추가됨
+  const t = startedSurvey ? Math.round((Date.now() - startedSurvey) / 1000) : '';
+  out['참여시간_초'] = t;
+  out['참여시간'] = t === '' ? '' : `${Math.floor(t / 60)}분 ${t % 60}초`;
   return out;
 }
 
