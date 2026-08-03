@@ -608,6 +608,24 @@ const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls)
 const label = o => typeof o === 'string' ? o : o.t;
 // 문자열 옵션에서 o.sub 를 읽으면 String.prototype.sub(내장 함수)가 잡히므로 반드시 이 헬퍼를 쓸 것
 const subOf = o => (typeof o === 'object' && o.sub) ? o.sub : '';
+
+// 보기 순서 랜덤 제시 대상 문항 — '기타'는 항상 마지막, 응답자별 1회만 섞고 고정
+// 저장되는 코드(A/payload)는 원래 보기 번호 기준이라 데이터 집계에는 영향 없음
+const SHUFFLE_IDS = ['q6','q7','q11','q12','q20','q22','q23','q24'];
+const ORDER = {};
+function displayOrder(q){
+  if (!SHUFFLE_IDS.includes(q.id)) return q.o.map((_, i) => i);
+  if (!ORDER[q.id]){
+    const main = [], tail = [];
+    q.o.forEach((o, i) => { (typeof o === 'object' && o.other) ? tail.push(i) : main.push(i); });
+    for (let i = main.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [main[i], main[j]] = [main[j], main[i]];
+    }
+    ORDER[q.id] = main.concat(tail);
+  }
+  return ORDER[q.id];
+}
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 function visible(i){ const q = Q[i]; return !q.when || q.when(A); }
@@ -743,7 +761,8 @@ function introOk(){
 /* ── 화면: 단일선택 ───────────────────────────────────────── */
 function rSingle(q, sc){
   const wrap = el('div','opts');
-  q.o.forEach((o, i) => {
+  displayOrder(q).forEach(i => {
+    const o = q.o[i];
     const on = A[q.id] === i + 1;
     const b = el('button','opt' + (on ? ' on' : ''));
     b.innerHTML = `<span class="mark round"></span><span>${esc(label(o))}${subOf(o) ? `<span class="sub">${esc(subOf(o))}</span>` : ''}</span>`;
@@ -788,7 +807,8 @@ function rSingle(q, sc){
 function rMulti(q, sc){
   const cur = A[q.id] || [];
   const wrap = el('div','opts');
-  q.o.forEach((o, i) => {
+  displayOrder(q).forEach(i => {
+    const o = q.o[i];
     const v = i + 1, on = cur.includes(v);
     const full = q.max && cur.length >= q.max && !on;
     const b = el('button','opt' + (on ? ' on' : '') + (full ? ' dim' : ''));
@@ -816,7 +836,8 @@ function rMulti(q, sc){
 function rankBody(q, sc, cardMode){
   const cur = A[q.id] || [];
   const wrap = el('div', cardMode ? 'cards' : 'opts');
-  q.o.forEach((o, i) => {
+  displayOrder(q).forEach(i => {
+    const o = q.o[i];
     const v = i + 1, r = cur.indexOf(v);
     const on = r >= 0;
     const full = cur.length >= q.max && !on;
