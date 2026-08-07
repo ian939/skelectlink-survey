@@ -198,6 +198,26 @@ input[type=range].rt::-moz-range-thumb{width:30px;height:30px;border-radius:50%;
 .toppick .tp-name{font-size:21.5px;font-weight:700}
 .toppick .tp-price{font-size:17px;font-weight:700;color:var(--red);margin-left:4px}
 
+/* ── 공공충전요금 변경 표 ────────────────── */
+.feewrap{
+  background:var(--paper);border:1.5px solid var(--line);border-radius:var(--r);
+  overflow:hidden;margin:0 0 20px;
+}
+.feetbl{width:100%;border-collapse:collapse;font-size:15.5px;line-height:1.4}
+.feetbl th{
+  background:#F7F7F9;color:var(--muted);font-weight:700;font-size:13.5px;
+  padding:11px 6px;text-align:center;border-bottom:1.5px solid var(--line);
+}
+.feetbl td{padding:12px 6px;text-align:center;font-weight:600}
+.feetbl tr+tr td{border-top:1px solid #F2F2F5}
+.feetbl td:first-child{text-align:left;padding-left:14px;font-weight:700}
+.feetbl .down{color:var(--ok);font-weight:700}
+.feetbl .up{color:var(--red);font-weight:700}
+.feewrap .fee-note{
+  font-size:13px;color:var(--muted-2);text-align:right;
+  padding:8px 14px;background:#FAFAFC;border-top:1px solid var(--line);
+}
+
 /* ── 충전량별 절감액 표 ──────────────────── */
 .savetbl{
   margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);
@@ -529,6 +549,22 @@ const Q = [
 
   { id:'q13', s:'D', n:13, type:'single', q:'평소 이용하시는 급속충전 단가가 kWh당 얼마인지 알고 계십니까?',
     o:[{t:'알고 있다',numeric:true,unit:'원 / kWh',ph:''},'정확히는 모르겠다'] },
+
+  { id:'q13_1', s:'D', nl:'13-1', type:'single', panel:'feeTable',
+    q:'26년 8월 1일부로 전기차 공공충전요금 정책이 바뀌었습니다. 알고 계셨나요?',
+    hint:'아래 표는 충전기 출력별로 바뀐 공공 충전요금입니다.',
+    o:['예, 알고 있었다','아니오, 몰랐다'] },
+
+  { id:'q13_2', s:'D', nl:'13-2', type:'scale',
+    q:'요금의 변화가 기사님의 충전 행동에 변화를 주었다고 생각하시나요?',
+    when:a => a.q13_1 === 1,
+    o:['매우 그렇다','그렇다','보통','그렇지 않다','전혀 아니다'] },
+
+  { id:'q13_3', s:'D', nl:'13-3', type:'text',
+    q:'그렇게 생각하신 이유는 무엇인가요?',
+    hint:'어떻게 바뀌었는지 짧게 적어주셔도 좋습니다.',
+    ph:'예) 초급속이 비싸져서 완속을 더 쓰게 됐다', skip:true,
+    when:a => a.q13_1 === 1 && [1,2].includes(a.q13_2) },
 
   { id:'q14', s:'D', n:14, type:'single', q:'평소 이용하시는 완속충전 단가가 kWh당 얼마인지 알고 계십니까?',
     o:[{t:'알고 있다',numeric:true,unit:'원 / kWh',ph:''},'정확히는 모르겠다'] },
@@ -988,6 +1024,22 @@ const PANELS = {
       <div class="sv-num">약 ${c.save.toLocaleString('ko-KR')}<small>원</small></div>
       <div class="sv-formula">${c.basis} 약 ${c.kwh.toLocaleString('ko-KR')}kWh × 급속 비중 ${c.pct}% × kWh당 96원 할인</div>
       <div class="sv-note">${note}</div>`);
+  },
+  feeTable(){
+    // 26.8.1 환경부 공공충전요금 개편 (원/kWh) — 사용자 제공 표 기준
+    const ROWS = [
+      ['30kW 미만 (완속)','324.4','295.0','9.1% 인하','down'],
+      ['30~50kW 미만','324.4','307.2','5.3% 인하','down'],
+      ['50~100kW 미만','324.4','325.6','0.4% 인상','up'],
+      ['100~200kW 미만','347.2','348.4','0.3% 인상','up'],
+      ['200kW 이상 (초급속)','347.2','393.1','13.2% 인상','up']
+    ];
+    return el('div','feewrap',`
+      <table class="feetbl">
+        <tr><th>충전기 출력</th><th>기존</th><th>8월부터</th><th>변동</th></tr>
+        ${ROWS.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="${r[4]}">${r[3]}</td></tr>`).join('')}
+      </table>
+      <div class="fee-note">단위: 원/kWh · 공공(환경부) 충전요금 기준</div>`);
   },
   top1(){
     const cardsQ = Q.find(x => x.id === 'q20');
